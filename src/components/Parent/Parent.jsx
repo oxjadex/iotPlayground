@@ -25,8 +25,7 @@ const ParentDashboard = () => {
     fetchMessages();
     fetchVisits();
     updateTime();
-    const timerId = setInterval(updateTime, 60000); // 1분마다 업데이트
-    return () => clearInterval(timerId); // 컴포넌트 언마운트 시 타이머 정리
+    return () => clearInterval(); 
   }, []);
 
   const fetchMessages = async () => {
@@ -101,140 +100,129 @@ const ParentDashboard = () => {
   };
 
   return (
-          <Container>
-        <PhoneContainer>
-          <TimeContainer>
-            <TimeText>{time}</TimeText>
-            <Battery src={set}></Battery>
-          </TimeContainer>
-          <Bar>
-            <LogoImg src={logo}></LogoImg>
-            <Hamburger src={hamburgerIcon}></Hamburger>
-          </Bar>
-          <ContentContainer>
-            <LocationContainer>
-              <LocationIcon src={locationIcon}></LocationIcon>
-              <LocationText>
-                <LocationName>창민의 위치</LocationName>
-                <Location>숲속 놀이터</Location>
-              </LocationText>
-            </LocationContainer>
-            <Title>현재 위치의 놀이터 CCTV</Title>
-            <Card className="mb-4">
-              <CardHeader>
-                <SmallTitle>CCTV 영상</SmallTitle>
-              </CardHeader>
-              <CardContent>
-                <Video>영상 올거임</Video>
-              </CardContent>
-            </Card>
-            <Card className="mb-4">
-              <CardHeader>
-                <SmallTitle>아이에게 메시지 보내기</SmallTitle>
-              </CardHeader>
-              <CardContent>
-                <MessageContainer>
-                  <InputContainer>
-                    <Input
-                      type="text"
-                      value={selectedChild}
-                      onChange={(e) => setSelectedChild(e.target.value)}
-                      placeholder="아이의 이름"
-                    />
-                    <Input
-                      type="text"
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      placeholder="메시지 내용을 적어주세요"
-                    />
-                  </InputContainer>
-                  <Button onClick={sendMessage}>
-                    <SendIcon src={sendIcon}></SendIcon>
-                  </Button>
-                </MessageContainer>
-                <div className="mt-4">
-                  <h3 className="font-bold">Recent Messages:</h3>
-                  <ul>
-                    {messages.slice(0, 5).map((msg, index) => (
-                      <li key={index}>
-                        {msg.childName}: {msg.content}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="mb-4">
-              <CardHeader>
-                <SmallTitle>놀이터 혼잡률</SmallTitle>
-              </CardHeader>
-              <CardContent>
-                <Congestion>
-                  <CongestionContainer>
-                    <CongestionIcon src={userIcon}></CongestionIcon>
-                    <CongestionText color={getLazyColor(congestion)}>
-                      한산
-                    </CongestionText>
-                  </CongestionContainer>
-                  <CongestionContainer>
-                    <CongestionIcon src={usersIcon}></CongestionIcon>
-                    <CongestionText color={getNormalColor(congestion)}>
-                      보통
-                    </CongestionText>
-                  </CongestionContainer>
-                  <CongestionContainer>
-                    <CongestionIcon src={userFour}></CongestionIcon>
-                    <CongestionText color={getConfusionColor(congestion)}>
-                      혼잡
-                    </CongestionText>
-                  </CongestionContainer>
-                </Congestion>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <SmallTitle>Set Playground Return Time</SmallTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col space-y-2">
+    <Container>
+      <PhoneContainer>
+        <TimeContainer>
+          <TimeText>{time}</TimeText>
+          <Battery src={set}></Battery>
+        </TimeContainer>
+        <Bar>
+          <LogoImg src={logo}></LogoImg>
+          <Hamburger src={hamburgerIcon}></Hamburger>
+        </Bar>
+        <ContentContainer>
+          <LocationContainer>
+            <LocationIcon src={locationIcon}></LocationIcon>
+            <LocationText>
+              <LocationName>창민의 위치</LocationName>
+              <Location>숲속 놀이터</Location>
+            </LocationText>
+          </LocationContainer>
+          <Title>현재 위치의 놀이터 CCTV</Title>
+          <Card className="mb-4">
+            <CardHeader>
+              <SmallTitle>CCTV 영상</SmallTitle>
+            </CardHeader>
+            <CardContent>
+              <Video>영상 올거임</Video>
+            </CardContent>
+          </Card>
+          <Card className="mb-4">
+            <CardHeader>
+              <SmallTitle>아이에게 메시지 보내기</SmallTitle>
+            </CardHeader>
+            <CardContent>
+              <MessageContainer>
+                <InputContainer>
                   <Input
                     type="text"
                     value={selectedChild}
                     onChange={(e) => setSelectedChild(e.target.value)}
-                    placeholder="Child's name"
+                    placeholder="아이의 이름"
                   />
                   <Input
-                    type="datetime-local"
-                    value={returnTime}
-                    onChange={(e) => setReturnTime(e.target.value)}
+                    type="text"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="메시지 내용을 적어주세요"
                   />
-                  <Button onClick={setPlaygroundVisit}>Set Visit</Button>
-                </div>
-                <div className="mt-4">
-                  <h3 className="font-bold">Scheduled Visits:</h3>
-                  <ul>
-                    {visits.map((visit, index) => (
-                      <li key={index}>
-                        {visit.childName}:{" "}
-                        {new Date(visit.returnTime).toLocaleString()}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-          </ContentContainer>
-        </PhoneContainer>
-      </Container>
-      );
+                </InputContainer>
+                <Button onClick={sendMessage}>
+                  <SendIcon src={sendIcon}></SendIcon>
+                </Button>
+              </MessageContainer>
+            </CardContent>
+          </Card>
+          <Card className="mb-4">
+            <CardHeader>
+              <SmallTitle>놀이터 혼잡률</SmallTitle>
+            </CardHeader>
+            <CardContent>
+              <Congestion>
+                <CongestionContainer>
+                  <CongestionIcon src={userIcon}></CongestionIcon>
+                  <CongestionText color={getLazyColor(congestion)}>
+                    한산
+                  </CongestionText>
+                </CongestionContainer>
+                <CongestionContainer>
+                  <CongestionIcon src={usersIcon}></CongestionIcon>
+                  <CongestionText color={getNormalColor(congestion)}>
+                    보통
+                  </CongestionText>
+                </CongestionContainer>
+                <CongestionContainer>
+                  <CongestionIcon src={userFour}></CongestionIcon>
+                  <CongestionText color={getConfusionColor(congestion)}>
+                    혼잡
+                  </CongestionText>
+                </CongestionContainer>
+              </Congestion>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <SmallTitle>Set Playground Return Time</SmallTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col space-y-2">
+                <Input
+                  type="text"
+                  value={selectedChild}
+                  onChange={(e) => setSelectedChild(e.target.value)}
+                  placeholder="Child's name"
+                />
+                <Input
+                  type="datetime-local"
+                  value={returnTime}
+                  onChange={(e) => setReturnTime(e.target.value)}
+                />
+                <Button onClick={setPlaygroundVisit}>Set Visit</Button>
+              </div>
+              <div className="mt-4">
+                <h3 className="font-bold">Scheduled Visits:</h3>
+                <ul>
+                  {visits.map((visit, index) => (
+                    <li key={index}>
+                      {visit.childName}:{" "}
+                      {new Date(visit.returnTime).toLocaleString()}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </ContentContainer>
+      </PhoneContainer>
+    </Container>
+  );
 };
 
 export default ParentDashboard;
 
 const Container = styled.div`
   position: relative;
-  height: 90%;
-  top: -10px;
+  height: 94%;
   padding: 16px 18px;
   overflow: auto;
   border-radius: 41px;
