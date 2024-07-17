@@ -4,8 +4,6 @@ import Parent from "./components/Parent/Parent";
 import PhoneMockup from "./assets/mockup.png";
 import styled from "styled-components";
 
-const API_URL = "http://localhost:5000/api";
-
 const App = () => {
   return (
     <Container>
@@ -23,7 +21,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh; /* 전체 뷰포트 높이를 차지 */
-  background-color: #f0f0f0; /* 배경색 설정 (필요에 따라 변경) */
+  background-color: #ffffff; /* 배경색 설정 (필요에 따라 변경) */
 `;
 
 const PhoneMockupContainer = styled.div`
