@@ -7,7 +7,7 @@ import {
   Link,
 } from "react-router-dom";
 import AuthPage from "./components/AuthPage";
-import MainPage from "./components/MainPage";
+import Home from "./components/Home";
 import PlaygroundOccupancy from "./components/PlaygroundOccupancy";
 import Reservation from "./components/Reservation";
 import Login from "./components/Login";
@@ -16,32 +16,17 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
 
 const App = () => {
-  const isAuthenticated = false;
+  const isAuthenticated =true;
 
   return (
     <Router>
       <div className="app">
-        {isAuthenticated && (
-          <nav>
-            <ul>
-              <li>
-                <Link to="/">Home</Link>
-              </li>
-              <li>
-                <Link to="/occupancy">Occupancy</Link>
-              </li>
-              <li>
-                <Link to="/reservation">Reservation</Link>
-              </li>
-            </ul>
-          </nav>
-        )}
         <div className="content">
           <Routes>
             <Route path="/auth" element={<AuthPage />} />
             <Route
               path="/"
-              element={isAuthenticated ? <MainPage /> : <Navigate to="/auth" />}
+              element={isAuthenticated ? <Home /> : <Navigate to="/auth" />}
             />
             <Route
               path="/occupancy"
