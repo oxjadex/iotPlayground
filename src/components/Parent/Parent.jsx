@@ -16,8 +16,6 @@ const ParentDashboard = () => {
   const [messages, setMessages] = useState([]);
   const [visits, setVisits] = useState([]);
   const [time, setTime] = useState("");
-  const [name, setName] = useState("");
-  const [location, setLocation] = useState;
 
   useEffect(() => {
     fetchMessages();
@@ -95,21 +93,19 @@ const ParentDashboard = () => {
           <LocationContainer>
             <LocationIcon src={locationIcon}></LocationIcon>
             <LocationText>
-              <LocationName>{name}</LocationName>
-              <Location>{location}</Location>
+              <LocationName>창민의 위치</LocationName>
+              <Location>숲속 놀이터</Location>
             </LocationText>
           </LocationContainer>
-          <h1 className="text-2xl font-bold mb-4">
-            Smart Playground Parent Dashboard
-          </h1>
+          <Title>현재 위치의 놀이터 CCTV</Title>
           <Card className="mb-4">
             <CardHeader>
-              <CardTitle>CCTV Monitoring</CardTitle>
+              <CardTitle>CCTV 영상</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="bg-gray-200 h-64 flex items-center justify-center">
-                CCTV Feed Placeholder
-              </div>
+              <Video>
+                영상 올거임
+              </Video>
             </CardContent>
           </Card>
           <Card className="mb-4">
@@ -198,7 +194,7 @@ export default ParentDashboard;
 const Container = styled.div`
   height: 90%;
   padding: 16px 18px;
-  overflow: hidden;
+  overflow: scroll;
 `;
 
 const PhoneContainer = styled.div``;
@@ -240,7 +236,9 @@ const ContentContainer = styled.div`
   background: #f1f3f8;
 `;
 
-const LocationContainer = styled.div``;
+const LocationContainer = styled.div`
+  display: flex;
+`;
 
 const LocationIcon = styled.img`
   width: 24px;
@@ -249,12 +247,28 @@ const LocationIcon = styled.img`
 
 const LocationText = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
 `;
 
-const LocationName = styled.div``;
+const LocationName = styled.div`
+  color: #8a8a8a;
+  font-size: 12px;
+`;
 
-const Location = styled.div``;
+const Location = styled.div`
+  font-size: 14px;
+`;
+
+const Title = styled.div`
+  font-size: 18px;
+  font-weight: 500;
+  padding: 12px 0px;
+`;
+
+const Video = styled.video`
+  width: 100%;
+  height: 200px;
+  object-fit: cover;`;
 
 const Card = styled.div`
   background-color: #fff;
