@@ -13,7 +13,7 @@ const ParentDashboard = () => {
   const [messages, setMessages] = useState([]);
   const [visits, setVisits] = useState([]);
 
-  const time = new Date();
+  // const time = new Date();
 
   useEffect(() => {
     fetchMessages();
@@ -69,7 +69,7 @@ const ParentDashboard = () => {
     <Container>
       <PhoneContainer>
         <TimeContainer>
-          <Time>{time}</Time>
+          {/* <Time>{time}</Time> */}
           <Battery src={set}></Battery>
         </TimeContainer>
         <h1 className="text-2xl font-bold mb-4">
