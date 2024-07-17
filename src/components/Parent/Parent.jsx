@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Users } from "lucide-react";
 import styled from "styled-components";
 import set from "../../assets/rightSide.svg";
 import logo from "../../assets/logo.svg";
 import hamburgerIcon from "../../assets/hamburgerIcon.svg";
 import locationIcon from "../../assets/locationIcon.svg";
+import UserIcon from "../../assets/user";
+import usersIcon from "../../assets/users.svg";
+import userFour from "../../assets/userFour.svg";
 
 const API_URL = "http://localhost:5000/api";
 
@@ -16,6 +18,7 @@ const ParentDashboard = () => {
   const [messages, setMessages] = useState([]);
   const [visits, setVisits] = useState([]);
   const [time, setTime] = useState("");
+  const [congestion, setCongestion] = useState(0);
 
   useEffect(() => {
     fetchMessages();
@@ -78,6 +81,24 @@ const ParentDashboard = () => {
     setTime(formattedTime);
   };
 
+  const getConfusionColor = (value) => {
+    if (value >= 5) return "#0095FF";
+    if (value >= 3 && value < 5) return "grey";
+    return "grey";
+  };
+
+  const getNormalColor = (value) => {
+    if (value >= 5) return "grey";
+    if (value >= 3 && value < 5) return "#0095FF";
+    return "grey";
+  };
+
+  const getLazyColor = (value) => {
+    if (value >= 5) return "grey";
+    if (value >= 3 && value < 5) return "grey";
+    return "#0095FF";
+  };
+
   return (
     <Container>
       <PhoneContainer>
@@ -100,34 +121,34 @@ const ParentDashboard = () => {
           <Title>현재 위치의 놀이터 CCTV</Title>
           <Card className="mb-4">
             <CardHeader>
-              <CardTitle>CCTV 영상</CardTitle>
+              <SmallTitle>CCTV 영상</SmallTitle>
             </CardHeader>
             <CardContent>
-              <Video>
-                영상 올거임
-              </Video>
+              <Video>영상 올거임</Video>
             </CardContent>
           </Card>
           <Card className="mb-4">
             <CardHeader>
-              <CardTitle>Send Message to Child</CardTitle>
+              <SmallTitle>아이에게 메시지 보내기</SmallTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col space-y-2">
-                <Input
-                  type="text"
-                  value={selectedChild}
-                  onChange={(e) => setSelectedChild(e.target.value)}
-                  placeholder="Child's name"
-                />
-                <Input
-                  type="text"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Enter message for your child"
-                />
+              <MessageContainer>
+                <InputContainer>
+                  <Input
+                    type="text"
+                    value={selectedChild}
+                    onChange={(e) => setSelectedChild(e.target.value)}
+                    placeholder="아이의 이름"
+                  />
+                  <Input
+                    type="text"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="메시지 내용을 적어주세요"
+                  />
+                </InputContainer>
                 <Button onClick={sendMessage}>Send</Button>
-              </div>
+              </MessageContainer>
               <div className="mt-4">
                 <h3 className="font-bold">Recent Messages:</h3>
                 <ul>
@@ -142,18 +163,34 @@ const ParentDashboard = () => {
           </Card>
           <Card className="mb-4">
             <CardHeader>
-              <CardTitle>Playground Congestion</CardTitle>
+              <SmallTitle>놀이터 혼잡률</SmallTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center">
-                <Users className="mr-2" />
-                <span>Current playground congestion: Moderate</span>
-              </div>
+              <Congestion>
+                <CongestionContainer>
+                  <UserIcon color={getLazyColor(congestion)}></UserIcon>
+                  <CongestionText color={getLazyColor(congestion)}>
+                    한산
+                  </CongestionText>
+                </CongestionContainer>
+                <CongestionContainer>
+                  <CongestionIcon src={usersIcon}></CongestionIcon>
+                  <CongestionText color={getNormalColor(congestion)}>
+                    보통
+                  </CongestionText>
+                </CongestionContainer>
+                <CongestionContainer>
+                  <CongestionIcon src={userFour}></CongestionIcon>
+                  <CongestionText color={getConfusionColor(congestion)}>
+                    혼잡
+                  </CongestionText>
+                </CongestionContainer>
+              </Congestion>
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Set Playground Return Time</CardTitle>
+              <SmallTitle>Set Playground Return Time</SmallTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col space-y-2">
@@ -194,7 +231,7 @@ export default ParentDashboard;
 const Container = styled.div`
   height: 90%;
   padding: 16px 18px;
-  overflow: scroll;
+  overflow: auto;
 `;
 
 const PhoneContainer = styled.div``;
@@ -268,7 +305,8 @@ const Title = styled.div`
 const Video = styled.video`
   width: 100%;
   height: 200px;
-  object-fit: cover;`;
+  object-fit: cover;
+`;
 
 const Card = styled.div`
   background-color: #fff;
@@ -279,20 +317,35 @@ const Card = styled.div`
 `;
 
 const CardHeader = styled.div`
-  padding: 16px;
+  padding: 0px 16px;
   border-bottom: 1px solid #eaeaea;
 `;
 
-const CardTitle = styled.h2`
-  font-size: 18px;
-  font-weight: bold;
+const SmallTitle = styled.h2`
+  font-size: 12px;
+  padding: 12px 0px;
+  font-weight: 500;
 `;
 
 const CardContent = styled.div`
   padding: 16px;
 `;
 
+const MessageContainer = styled.div`
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+`;
+
+const InputContainer = styled.div`
+  display: flex;
+  gap: 5px;
+  width: 100%;
+  flex-direction: column;
+`;
+
 const Input = styled.input`
+  width: 100%;
   padding: 8px;
   border: 1px solid #eaeaea;
   border-radius: 4px;
@@ -310,4 +363,26 @@ const Button = styled.button`
   &:hover {
     background-color: #0056b3;
   }
+`;
+
+const Congestion = styled.div`
+  display: flex;
+  gap: 5px;
+  justify-content: space-between;
+`;
+
+const CongestionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const CongestionIcon = styled.img`
+  width: 24px;
+`;
+
+const CongestionText = styled.div`
+  color: ${(props) => props.color};
+  font-weight: 400;
+  font-size: 8px;
 `;
