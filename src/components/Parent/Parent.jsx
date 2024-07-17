@@ -15,17 +15,35 @@ const API_URL = "http://localhost:5000/api";
 const ParentDashboard = () => {
   const [message, setMessage] = useState("");
   const [returnTime, setReturnTime] = useState("");
-  const [selectedChild, setSelectedChild] = useState("");
+  const [messageSelectedChild, setMessageSelectedChild] = useState("");
+  const [visitSelectedChild, setVisitSelectedChild] = useState("");
   const [messages, setMessages] = useState([]);
   const [visits, setVisits] = useState([]);
   const [time, setTime] = useState("");
+  const [currentVisitors, setCurrentVisitors] = useState(0);
   const [congestion, setCongestion] = useState(0);
+  const [isSticky, setIsSticky] = useState(false);
 
   useEffect(() => {
     fetchMessages();
     fetchVisits();
     updateTime();
-    return () => clearInterval(); 
+    const timerId = setInterval(updateTime, 60000); // 1분마다 업데이트
+
+    const handleScroll = () => {
+      if (window.scrollY > 100) {
+        setIsSticky(true);
+      } else {
+        setIsSticky(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      clearInterval(timerId);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   const fetchMessages = async () => {
@@ -49,7 +67,7 @@ const ParentDashboard = () => {
   const sendMessage = async () => {
     try {
       await axios.post(`${API_URL}/messages`, {
-        childName: selectedChild,
+        childName: messageSelectedChild,
         content: message,
       });
       setMessage("");
@@ -62,15 +80,39 @@ const ParentDashboard = () => {
   const setPlaygroundVisit = async () => {
     try {
       await axios.post(`${API_URL}/visits`, {
-        childName: selectedChild,
+        childName: visitSelectedChild,
         returnTime: new Date(returnTime),
       });
-      setSelectedChild("");
+      setVisitSelectedChild("");
       setReturnTime("");
       fetchVisits();
+      increaseVisitors();
+      setTimeout(decreaseVisitors, 2 * 60 * 60 * 1000); // 2시간 후에 방문자 수 감소
     } catch (error) {
       console.error("Error setting visit:", error);
     }
+  };
+
+  const increaseVisitors = () => {
+    setCurrentVisitors((prev) => prev + 1);
+    calculateCongestion();
+  };
+
+  const decreaseVisitors = () => {
+    setCurrentVisitors((prev) => prev - 1);
+    calculateCongestion();
+  };
+
+  const calculateCongestion = () => {
+    let congestionLevel;
+    if (currentVisitors >= 5) {
+      congestionLevel = 3; // 혼잡
+    } else if (currentVisitors >= 3 && currentVisitors < 5) {
+      congestionLevel = 2; // 보통
+    } else {
+      congestionLevel = 1; // 한산
+    }
+    setCongestion(congestionLevel);
   };
 
   const updateTime = () => {
@@ -82,34 +124,33 @@ const ParentDashboard = () => {
   };
 
   const getConfusionColor = (value) => {
-    if (value >= 5) return "#0095FF";
-    if (value >= 3 && value < 5) return "grey";
+    if (value === 3) return "#0095FF";
     return "grey";
   };
 
   const getNormalColor = (value) => {
-    if (value >= 5) return "grey";
-    if (value >= 3 && value < 5) return "#0095FF";
+    if (value === 2) return "#0095FF";
     return "grey";
   };
 
   const getLazyColor = (value) => {
-    if (value >= 5) return "grey";
-    if (value >= 3 && value < 5) return "grey";
-    return "#0095FF";
+    if (value === 1) return "#0095FF";
+    return "grey";
   };
 
   return (
     <Container>
       <PhoneContainer>
-        <TimeContainer>
-          <TimeText>{time}</TimeText>
-          <Battery src={set}></Battery>
-        </TimeContainer>
-        <Bar>
-          <LogoImg src={logo}></LogoImg>
-          <Hamburger src={hamburgerIcon}></Hamburger>
-        </Bar>
+        <StickyHeader isSticky={isSticky}>
+          <TimeContainer>
+            <TimeText>{time}</TimeText>
+            <Battery src={set}></Battery>
+          </TimeContainer>
+          <Bar>
+            <LogoImg src={logo}></LogoImg>
+            <Hamburger src={hamburgerIcon}></Hamburger>
+          </Bar>
+        </StickyHeader>
         <ContentContainer>
           <LocationContainer>
             <LocationIcon src={locationIcon}></LocationIcon>
@@ -124,7 +165,7 @@ const ParentDashboard = () => {
               <SmallTitle>CCTV 영상</SmallTitle>
             </CardHeader>
             <CardContent>
-              <Video>영상 올거임</Video>
+              <Video></Video>
             </CardContent>
           </Card>
           <Card className="mb-4">
@@ -136,8 +177,8 @@ const ParentDashboard = () => {
                 <InputContainer>
                   <Input
                     type="text"
-                    value={selectedChild}
-                    onChange={(e) => setSelectedChild(e.target.value)}
+                    value={messageSelectedChild}
+                    onChange={(e) => setMessageSelectedChild(e.target.value)}
                     placeholder="아이의 이름"
                   />
                   <Input
@@ -182,34 +223,23 @@ const ParentDashboard = () => {
           </Card>
           <Card>
             <CardHeader>
-              <SmallTitle>Set Playground Return Time</SmallTitle>
+              <SmallTitle>놀이터 방문 시간</SmallTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col space-y-2">
+              <InputContainer>
                 <Input
                   type="text"
-                  value={selectedChild}
-                  onChange={(e) => setSelectedChild(e.target.value)}
-                  placeholder="Child's name"
+                  value={visitSelectedChild}
+                  onChange={(e) => setVisitSelectedChild(e.target.value)}
+                  placeholder="아이의 이름"
                 />
                 <Input
                   type="datetime-local"
                   value={returnTime}
                   onChange={(e) => setReturnTime(e.target.value)}
                 />
-                <Button onClick={setPlaygroundVisit}>Set Visit</Button>
-              </div>
-              <div className="mt-4">
-                <h3 className="font-bold">Scheduled Visits:</h3>
-                <ul>
-                  {visits.map((visit, index) => (
-                    <li key={index}>
-                      {visit.childName}:{" "}
-                      {new Date(visit.returnTime).toLocaleString()}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                <Button onClick={setPlaygroundVisit}>방문 설정하기</Button>
+              </InputContainer>
             </CardContent>
           </Card>
         </ContentContainer>
@@ -226,9 +256,18 @@ const Container = styled.div`
   padding: 16px 18px;
   overflow: auto;
   border-radius: 41px;
+  z-index: 0;
 `;
 
 const PhoneContainer = styled.div``;
+
+const StickyHeader = styled.div`
+  position: ${(props) => (props.isSticky ? "sticky" : "relative")};
+  top: 0;
+  z-index: 100;
+  background-color: #fff;
+  width: 100%;
+`;
 
 const TimeContainer = styled.div`
   padding: 16px 16px 0px 32px;

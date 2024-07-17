@@ -29,6 +29,7 @@ const Container = styled.div`
   align-items: center;
   height: 100vh;
   background-color: #ffffff;
+  z-index:-2;
 `;
 
 const PhoneMockupContainer = styled.div`
@@ -36,6 +37,7 @@ const PhoneMockupContainer = styled.div`
   height: 735px;
   background: url(${PhoneMockup}) 50%/ 100% no-repeat;
   overflow: hidden;
+  z-index: 1;
 `;
 
 const AppleWatchMockupContainer = styled.div`
