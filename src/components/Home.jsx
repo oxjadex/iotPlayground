@@ -5,6 +5,7 @@ import Header from "./Header";
 import color from "../styles/color";
 import locationIcon from "../assets/location.svg";
 import arrowBottom from "../assets/arrowBottom.svg";
+import video from "../assets/img.svg";
 
 const Home = () => {
   const [message, setMessage] = useState("");
@@ -34,7 +35,7 @@ const Home = () => {
         <Title>현재 위치의 놀이터 CCTV</Title>
         <CctvVideo>
           <Video>
-            <VideoImg src={arrowBottom}></VideoImg>
+            <VideoImg src={video}></VideoImg>
           </Video>
         </CctvVideo>
         <SendMessageContainer>
@@ -88,13 +89,20 @@ const VideoContainer = styled.div`
 
 const Title = styled.div`
   font-size: 18px;
+  margin-bottom: 10px;
 `;
 
 const CctvVideo = styled.div``;
 
-const Video = styled.div``;
+const Video = styled.div`
+  overflow: hidden;
+  border-radius: 6px;
+  margin-bottom: 10px;
+`;
 
-const VideoImg = styled.img``;
+const VideoImg = styled.img`
+  width: 100%;
+`;
 
 const SendMessageContainer = styled.div`
   display: flex;

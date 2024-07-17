@@ -4,7 +4,6 @@ import {
   Route,
   Routes,
   Navigate,
-  Link,
 } from "react-router-dom";
 import AuthPage from "./components/AuthPage";
 import Home from "./components/Home";
@@ -13,10 +12,9 @@ import Reservation from "./components/Reservation";
 import Login from "./components/Login";
 import ChildrenList from "./components/ChildrenList";
 import ProtectedRoute from "./components/ProtectedRoute";
-import "./App.css";
 
 const App = () => {
-  const isAuthenticated =true;
+  const isAuthenticated = true;
 
   return (
     <Router>
@@ -48,9 +46,7 @@ const App = () => {
             <Route
               path="/children"
               element={
-                <ProtectedRoute>
                   <ChildrenList />
-                </ProtectedRoute>
               }
             />
             <Route
