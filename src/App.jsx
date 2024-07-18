@@ -13,9 +13,7 @@ const App = () => {
       <PhoneMockupContainer>
         <Parent></Parent>
       </PhoneMockupContainer>
-      <AppleWatchMockupContainer>
-        <Child></Child>
-      </AppleWatchMockupContainer>
+      <Child></Child>
     </Container>
   );
 };
