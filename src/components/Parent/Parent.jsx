@@ -5,9 +5,12 @@ import set from "../../assets/rightSide.svg";
 import logo from "../../assets/logo.svg";
 import hamburgerIcon from "../../assets/hamburgerIcon.svg";
 import locationIcon from "../../assets/locationIcon.svg";
-import userIcon from "../../assets/user.svg";
+import userIcon from "../../assets/userNormal.svg";
+import userIconBlue from "../../assets/userBlue.svg"; // 블루 아이콘
 import usersIcon from "../../assets/users.svg";
+import usersIconBlue from "../../assets/userTwoBlue.svg"; // 블루 아이콘
 import userFour from "../../assets/userFour.svg";
+import userFourBlue from "../../assets/userFourBlue.svg"; // 블루 아이콘
 import sendIcon from "../../assets/sendIcon.svg";
 import io from "socket.io-client";
 
@@ -160,6 +163,16 @@ const ParentDashboard = () => {
     return "grey";
   };
 
+  const getIconSrc = (congestionLevel, iconType) => {
+    if (iconType === "lazy") {
+      return congestionLevel === 1 ? userIconBlue : userIcon;
+    } else if (iconType === "normal") {
+      return congestionLevel === 2 ? usersIconBlue : usersIcon;
+    } else if (iconType === "confusion") {
+      return congestionLevel === 3 ? userFourBlue : userFour;
+    }
+  };
+
   const startStream = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -232,19 +245,25 @@ const ParentDashboard = () => {
             <CardContent>
               <Congestion>
                 <CongestionContainer>
-                  <CongestionIcon src={userIcon}></CongestionIcon>
+                  <CongestionIcon
+                    src={getIconSrc(congestion, "lazy")}
+                  ></CongestionIcon>
                   <CongestionText color={getLazyColor(congestion)}>
                     한산
                   </CongestionText>
                 </CongestionContainer>
                 <CongestionContainer>
-                  <CongestionIcon src={usersIcon}></CongestionIcon>
+                  <CongestionIcon
+                    src={getIconSrc(congestion, "normal")}
+                  ></CongestionIcon>
                   <CongestionText color={getNormalColor(congestion)}>
                     보통
                   </CongestionText>
                 </CongestionContainer>
                 <CongestionContainer>
-                  <CongestionIcon src={userFour}></CongestionIcon>
+                  <CongestionIcon
+                    src={getIconSrc(congestion, "confusion")}
+                  ></CongestionIcon>
                   <CongestionText color={getConfusionColor(congestion)}>
                     혼잡
                   </CongestionText>
