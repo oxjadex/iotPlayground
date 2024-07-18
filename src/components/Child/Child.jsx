@@ -21,8 +21,8 @@ const ChildDashboard = () => {
     if (!testMode) {
       fetchMessages();
       fetchCurrentVisit();
-      const messageInterval = setInterval(fetchMessages, 5000);
-      const visitInterval = setInterval(fetchCurrentVisit, 60000);
+      const messageInterval = setInterval(fetchMessages, 500);
+      const visitInterval = setInterval(fetchCurrentVisit, 600);
 
       return () => {
         clearInterval(messageInterval);
