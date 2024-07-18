@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import styled from "styled-components";
 import set from "../../assets/rightSide.svg";
@@ -9,25 +9,30 @@ import userIcon from "../../assets/user.svg";
 import usersIcon from "../../assets/users.svg";
 import userFour from "../../assets/userFour.svg";
 import sendIcon from "../../assets/sendIcon.svg";
+import io from "socket.io-client";
 
 const API_URL = "http://localhost:5000/api";
 
 const ParentDashboard = () => {
   const [message, setMessage] = useState("");
-  const [returnTime, setReturnTime] = useState("");
   const [messageSelectedChild, setMessageSelectedChild] = useState("");
   const [visitSelectedChild, setVisitSelectedChild] = useState("");
+  const [visitStartTime, setVisitStartTime] = useState("");
+  const [visitEndTime, setVisitEndTime] = useState("");
   const [messages, setMessages] = useState([]);
   const [visits, setVisits] = useState([]);
   const [time, setTime] = useState("");
   const [currentVisitors, setCurrentVisitors] = useState(0);
   const [congestion, setCongestion] = useState(0);
   const [isSticky, setIsSticky] = useState(false);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     fetchMessages();
     fetchVisits();
     updateTime();
+    startStream();
+
     const timerId = setInterval(updateTime, 60000); // 1분마다 업데이트
 
     const handleScroll = () => {
@@ -38,11 +43,21 @@ const ParentDashboard = () => {
       }
     };
 
+    const socket = io(API_URL);
+    socket.on("cctv-stream", (data) => {
+      if (videoRef.current) {
+        const uint8Array = new Uint8Array(data);
+        const blob = new Blob([uint8Array], { type: "video/mp4" });
+        videoRef.current.src = URL.createObjectURL(blob);
+      }
+    });
+
     window.addEventListener("scroll", handleScroll);
 
     return () => {
       clearInterval(timerId);
       window.removeEventListener("scroll", handleScroll);
+      socket.disconnect();
     };
   }, []);
 
@@ -79,15 +94,22 @@ const ParentDashboard = () => {
 
   const setPlaygroundVisit = async () => {
     try {
+      const today = new Date().toISOString().split("T")[0]; // Get current date in YYYY-MM-DD format
+      const startDateTime = new Date(`${today}T${visitStartTime}:00`);
+      const endDateTime = new Date(`${today}T${visitEndTime}:00`);
+
       await axios.post(`${API_URL}/visits`, {
         childName: visitSelectedChild,
-        returnTime: new Date(returnTime),
+        startTime: startDateTime,
+        endTime: endDateTime,
       });
       setVisitSelectedChild("");
-      setReturnTime("");
+      setVisitStartTime("");
+      setVisitEndTime("");
       fetchVisits();
       increaseVisitors();
-      setTimeout(decreaseVisitors, 2 * 60 * 60 * 1000); // 2시간 후에 방문자 수 감소
+      const visitDuration = endDateTime - startDateTime;
+      setTimeout(decreaseVisitors, visitDuration);
     } catch (error) {
       console.error("Error setting visit:", error);
     }
@@ -138,6 +160,15 @@ const ParentDashboard = () => {
     return "grey";
   };
 
+  const startStream = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      videoRef.current.srcObject = stream;
+    } catch (error) {
+      console.error("Error accessing media devices.", error);
+    }
+  };
+
   return (
     <Container>
       <PhoneContainer>
@@ -165,7 +196,7 @@ const ParentDashboard = () => {
               <SmallTitle>CCTV 영상</SmallTitle>
             </CardHeader>
             <CardContent>
-              <Video></Video>
+              <Video ref={videoRef} autoPlay></Video>
             </CardContent>
           </Card>
           <Card className="mb-4">
@@ -233,11 +264,20 @@ const ParentDashboard = () => {
                   onChange={(e) => setVisitSelectedChild(e.target.value)}
                   placeholder="아이의 이름"
                 />
-                <Input
-                  type="datetime-local"
-                  value={returnTime}
-                  onChange={(e) => setReturnTime(e.target.value)}
-                />
+                <TimeInputContainer>
+                  <TimeInput
+                    type="time"
+                    value={visitStartTime}
+                    onChange={(e) => setVisitStartTime(e.target.value)}
+                  />
+                  <TimeTextSmall>부터</TimeTextSmall>
+                  <TimeInput
+                    type="time"
+                    value={visitEndTime}
+                    onChange={(e) => setVisitEndTime(e.target.value)}
+                  />
+                  <TimeTextSmall>까지</TimeTextSmall>
+                </TimeInputContainer>
                 <Button onClick={setPlaygroundVisit}>방문 설정하기</Button>
               </InputContainer>
             </CardContent>
@@ -267,6 +307,8 @@ const StickyHeader = styled.div`
   z-index: 100;
   background-color: #fff;
   width: 100%;
+  background: transparent;
+  overflow: hidden;
 `;
 
 const TimeContainer = styled.div`
@@ -274,6 +316,8 @@ const TimeContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: transparent;
+  overflow: hidden;
 `;
 
 const TimeText = styled.div`
@@ -422,4 +466,22 @@ const CongestionText = styled.div`
   color: ${(props) => props.color};
   font-weight: 400;
   font-size: 8px;
+`;
+
+const TimeInputContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const TimeInput = styled.input`
+  padding: 8px;
+  border: 1px solid #eaeaea;
+  border-radius: 4px;
+  width: 100px;
+`;
+
+const TimeTextSmall = styled.div`
+  font-size: 12px;
+  white-space: nowrap;
 `;
