@@ -27,7 +27,7 @@ const ParentDashboard = () => {
   const [time, setTime] = useState("");
   const [currentVisitors, setCurrentVisitors] = useState(0);
   const [congestion, setCongestion] = useState(0);
-  const [isSticky, setIsSticky] = useState(false);
+  const [isSticky, setIsSticky] = useState(true);
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -184,125 +184,127 @@ const ParentDashboard = () => {
 
   return (
     <Container>
-      <PhoneContainer>
-        <StickyHeader isSticky={isSticky}>
-          <TimeContainer>
-            <TimeText>{time}</TimeText>
-            <Battery src={set}></Battery>
-          </TimeContainer>
-          <Bar>
-            <LogoImg src={logo}></LogoImg>
-            <Hamburger src={hamburgerIcon}></Hamburger>
-          </Bar>
-        </StickyHeader>
-        <ContentContainer>
-          <LocationContainer>
-            <LocationIcon src={locationIcon}></LocationIcon>
-            <LocationText>
-              <LocationName>창민의 위치</LocationName>
-              <Location>숲속 놀이터</Location>
-            </LocationText>
-          </LocationContainer>
-          <Title>현재 위치의 놀이터 CCTV</Title>
-          <Card className="mb-4">
-            <CardHeader>
-              <SmallTitle>CCTV 영상</SmallTitle>
-            </CardHeader>
-            <CardContent>
-              <Video ref={videoRef} autoPlay></Video>
-            </CardContent>
-          </Card>
-          <Card className="mb-4">
-            <CardHeader>
-              <SmallTitle>아이에게 메시지 보내기</SmallTitle>
-            </CardHeader>
-            <CardContent>
-              <MessageContainer>
+      <Overflow>
+        <PhoneContainer>
+          <StickyHeader isSticky={isSticky}>
+            <TimeContainer>
+              <TimeText>{time}</TimeText>
+              <Battery src={set}></Battery>
+            </TimeContainer>
+            <Bar>
+              <LogoImg src={logo}></LogoImg>
+              <Hamburger src={hamburgerIcon}></Hamburger>
+            </Bar>
+          </StickyHeader>
+          <ContentContainer>
+            <LocationContainer>
+              <LocationIcon src={locationIcon}></LocationIcon>
+              <LocationText>
+                <LocationName>창민의 위치</LocationName>
+                <Location>숲속 놀이터</Location>
+              </LocationText>
+            </LocationContainer>
+            <Title>현재 위치의 놀이터 CCTV</Title>
+            <Card className="mb-4">
+              <CardHeader>
+                <SmallTitle>CCTV 영상</SmallTitle>
+              </CardHeader>
+              <CardContent>
+                <Video ref={videoRef} autoPlay></Video>
+              </CardContent>
+            </Card>
+            <Card className="mb-4">
+              <CardHeader>
+                <SmallTitle>아이에게 메시지 보내기</SmallTitle>
+              </CardHeader>
+              <CardContent>
+                <MessageContainer>
+                  <InputContainer>
+                    <Input
+                      type="text"
+                      value={messageSelectedChild}
+                      onChange={(e) => setMessageSelectedChild(e.target.value)}
+                      placeholder="아이의 이름"
+                    />
+                    <Input
+                      type="text"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="메시지 내용을 적어주세요"
+                    />
+                  </InputContainer>
+                  <Button onClick={sendMessage}>
+                    <SendIcon src={sendIcon}></SendIcon>
+                  </Button>
+                </MessageContainer>
+              </CardContent>
+            </Card>
+            <Card className="mb-4">
+              <CardHeader>
+                <SmallTitle>놀이터 혼잡률</SmallTitle>
+              </CardHeader>
+              <CardContent>
+                <Congestion>
+                  <CongestionContainer>
+                    <CongestionIcon
+                      src={getIconSrc(congestion, "lazy")}
+                    ></CongestionIcon>
+                    <CongestionText color={getLazyColor(congestion)}>
+                      한산
+                    </CongestionText>
+                  </CongestionContainer>
+                  <CongestionContainer>
+                    <CongestionIcon
+                      src={getIconSrc(congestion, "normal")}
+                    ></CongestionIcon>
+                    <CongestionText color={getNormalColor(congestion)}>
+                      보통
+                    </CongestionText>
+                  </CongestionContainer>
+                  <CongestionContainer>
+                    <CongestionIcon
+                      src={getIconSrc(congestion, "confusion")}
+                    ></CongestionIcon>
+                    <CongestionText color={getConfusionColor(congestion)}>
+                      혼잡
+                    </CongestionText>
+                  </CongestionContainer>
+                </Congestion>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <SmallTitle>놀이터 방문 시간</SmallTitle>
+              </CardHeader>
+              <CardContent>
                 <InputContainer>
                   <Input
                     type="text"
-                    value={messageSelectedChild}
-                    onChange={(e) => setMessageSelectedChild(e.target.value)}
+                    value={visitSelectedChild}
+                    onChange={(e) => setVisitSelectedChild(e.target.value)}
                     placeholder="아이의 이름"
                   />
-                  <Input
-                    type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="메시지 내용을 적어주세요"
-                  />
+                  <TimeInputContainer>
+                    <TimeInput
+                      type="time"
+                      value={visitStartTime}
+                      onChange={(e) => setVisitStartTime(e.target.value)}
+                    />
+                    <TimeTextSmall>부터</TimeTextSmall>
+                    <TimeInput
+                      type="time"
+                      value={visitEndTime}
+                      onChange={(e) => setVisitEndTime(e.target.value)}
+                    />
+                    <TimeTextSmall>까지</TimeTextSmall>
+                  </TimeInputContainer>
+                  <Button onClick={setPlaygroundVisit}>방문 설정하기</Button>
                 </InputContainer>
-                <Button onClick={sendMessage}>
-                  <SendIcon src={sendIcon}></SendIcon>
-                </Button>
-              </MessageContainer>
-            </CardContent>
-          </Card>
-          <Card className="mb-4">
-            <CardHeader>
-              <SmallTitle>놀이터 혼잡률</SmallTitle>
-            </CardHeader>
-            <CardContent>
-              <Congestion>
-                <CongestionContainer>
-                  <CongestionIcon
-                    src={getIconSrc(congestion, "lazy")}
-                  ></CongestionIcon>
-                  <CongestionText color={getLazyColor(congestion)}>
-                    한산
-                  </CongestionText>
-                </CongestionContainer>
-                <CongestionContainer>
-                  <CongestionIcon
-                    src={getIconSrc(congestion, "normal")}
-                  ></CongestionIcon>
-                  <CongestionText color={getNormalColor(congestion)}>
-                    보통
-                  </CongestionText>
-                </CongestionContainer>
-                <CongestionContainer>
-                  <CongestionIcon
-                    src={getIconSrc(congestion, "confusion")}
-                  ></CongestionIcon>
-                  <CongestionText color={getConfusionColor(congestion)}>
-                    혼잡
-                  </CongestionText>
-                </CongestionContainer>
-              </Congestion>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <SmallTitle>놀이터 방문 시간</SmallTitle>
-            </CardHeader>
-            <CardContent>
-              <InputContainer>
-                <Input
-                  type="text"
-                  value={visitSelectedChild}
-                  onChange={(e) => setVisitSelectedChild(e.target.value)}
-                  placeholder="아이의 이름"
-                />
-                <TimeInputContainer>
-                  <TimeInput
-                    type="time"
-                    value={visitStartTime}
-                    onChange={(e) => setVisitStartTime(e.target.value)}
-                  />
-                  <TimeTextSmall>부터</TimeTextSmall>
-                  <TimeInput
-                    type="time"
-                    value={visitEndTime}
-                    onChange={(e) => setVisitEndTime(e.target.value)}
-                  />
-                  <TimeTextSmall>까지</TimeTextSmall>
-                </TimeInputContainer>
-                <Button onClick={setPlaygroundVisit}>방문 설정하기</Button>
-              </InputContainer>
-            </CardContent>
-          </Card>
-        </ContentContainer>
-      </PhoneContainer>
+              </CardContent>
+            </Card>
+          </ContentContainer>
+        </PhoneContainer>
+      </Overflow>
     </Container>
   );
 };
@@ -318,16 +320,20 @@ const Container = styled.div`
   z-index: 0;
 `;
 
+const Overflow = styled.div`
+  overflow: hidden;
+`;
+
 const PhoneContainer = styled.div``;
 
 const StickyHeader = styled.div`
-  position: ${(props) => (props.isSticky ? "sticky" : "relative")};
-  top: 0;
+  position: sticky;
+  top: 1px;
   z-index: 100;
   background-color: #fff;
   width: 100%;
-  background: transparent;
   overflow: hidden;
+  border-radius: 41px 41px 0px 0px;
 `;
 
 const TimeContainer = styled.div`
@@ -364,9 +370,11 @@ const Hamburger = styled.img`
 `;
 
 const ContentContainer = styled.div`
+  position: relative;
   padding: 16px;
   width: 100%;
   background: #f1f3f8;
+  z-index: -30;
 `;
 
 const LocationContainer = styled.div`
